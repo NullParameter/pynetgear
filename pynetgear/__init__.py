@@ -55,7 +55,9 @@ Device = namedtuple(
         "device_type",
         "device_model",
         "ssid",
-        "conn_ap_mac"
+        "conn_ap_mac",
+        "upload",
+        "download"
     ]
 )
 
@@ -264,7 +266,7 @@ class Netgear(object):
 
             devices.append(Device(name, ipv4, mac,
                                   link_type, signal, link_rate, allow_or_block,
-                                  None, None, None, None))
+                                  None, None, None, None, None, None))
 
         return devices
 
@@ -285,8 +287,10 @@ class Netgear(object):
         if not success:
             return None
 
+        response_text = response.text.replace('&', 'and')
+
         success, devices_node = _find_node(
-            response.text,
+            response_text,
             ".//GetAttachDevice2Response/NewAttachDevice")
         if not success:
             return None
@@ -305,6 +309,8 @@ class Netgear(object):
             device_model = _xml_get(d, 'DeviceModel')
             ssid = _xml_get(d, 'SSID')
             conn_ap_mac = _xml_get(d, 'ConnAPMAC')
+            upload = _xml_get(d, 'Upload')
+            download = _xml_get(d, 'Download')
             devices.append(
                 Device(
                     name,
@@ -317,7 +323,9 @@ class Netgear(object):
                     device_type,
                     device_model,
                     ssid,
-                    conn_ap_mac
+                    conn_ap_mac,
+                    upload,
+                    download
                 )
             )
 
